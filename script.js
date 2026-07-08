@@ -24,6 +24,7 @@ const song = document.getElementById('song');
 song.volume = 0.55;
 
 function unlockSong(){
+  song.currentTime = 0; // always start from the top, no matter how long they lingered before pressing
   song.muted = false;
   song.play().catch(() => {
     // If it still can't play, try again silently on the next interaction
@@ -39,9 +40,6 @@ const noBtn = document.getElementById('noBtn');
 const yesBtn = document.getElementById('yesBtn');
 const choiceRow = document.getElementById('choiceRow');
 
-let dodging = false;
-let dodgeCount = 0;
-const catchThreshold = 10;
 let origin = null; // captured on first dodge: {x, y} = button's starting center
 
 function captureOrigin(){
@@ -54,19 +52,18 @@ function captureOrigin(){
 }
 
 function dodge(){
-  if(dodgeCount >= catchThreshold) return; // it's had enough — let her catch it
-
   captureOrigin();
-  dodging = true;
-  dodgeCount++;
 
   const margin = 16;
   const w = noBtn.offsetWidth || 100;
   const h = noBtn.offsetHeight || 44;
-  const roam = 130; // stays within ~130px of where it started — nearby, not across the screen
 
   const vw = window.visualViewport ? window.visualViewport.width : document.documentElement.clientWidth;
   const vh = window.visualViewport ? window.visualViewport.height : document.documentElement.clientHeight;
+
+  // Scale the roam distance down on smaller screens so it can't get pushed
+  // near the edge on a phone — stays visibly nearby on every screen size.
+  const roam = Math.max(50, Math.min(130, Math.min(vw, vh) * 0.22));
 
   // Pick a spot near the origin, then clamp so it never runs off the edge of the screen
   let x = origin.x - w / 2 + (Math.random() * roam * 2 - roam);
@@ -82,31 +79,20 @@ function dodge(){
   noBtn.style.zIndex = 20; // stays below the Yes button (z-index 40), never blocks it
 }
 
-// Desktop: run away before the cursor even reaches it
+// Desktop: run away before the cursor even reaches it — forever, no limit
 noBtn.addEventListener('mouseenter', dodge);
 noBtn.addEventListener('mousemove', dodge);
 
-// Mobile: run away on touch, unless it's earned the right to be caught
+// Mobile: every tap just shifts it — never lands, no matter how many tries
 noBtn.addEventListener('touchstart', (e) => {
-  if(dodgeCount < catchThreshold){
-    e.preventDefault();
-    dodge();
-  }
+  e.preventDefault();
+  dodge();
 }, { passive:false });
 
-// Once it's dodged enough times, a real click/tap lands — but it still
-// doesn't take "no" for an answer, it just gently teases and moves on.
+// Safety net: even if a click ever registers, it just dodges again — Yes is the only way forward
 noBtn.addEventListener('click', (e) => {
-  if(dodgeCount < catchThreshold){
-    e.preventDefault();
-    dodge();
-    return;
-  }
-  noBtn.textContent = "nice try 🙂";
-  setTimeout(() => {
-    goToScreen(5);
-    launchHearts();
-  }, 700);
+  e.preventDefault();
+  dodge();
 });
 
 // ---------- Yes ----------
