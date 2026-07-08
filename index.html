@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A Letter For You</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="sky">
+  <div class="stars"></div>
+</div>
+
+<audio id="song" loop preload="auto">
+  <!-- Put your song file at assets/song.mp3 -->
+  <source src="assets/song.mp3" type="audio/mpeg">
+</audio>
+
+<button id="soundToggle" class="sound-toggle" aria-label="Toggle music">🔈</button>
+
+<main class="stage">
+
+  <!-- SCREEN 1 -->
+  <section class="screen active" data-screen="1">
+    <div class="letter">
+      <p class="eyebrow">for you</p>
+      <h1 class="script">I need to tell you something</h1>
+      <p class="body-text">It won't take long. Will you read it?</p>
+      <button class="btn btn-primary" data-next="2" data-start-audio>Okay, I'm listening</button>
+    </div>
+  </section>
+
+  <!-- SCREEN 2 -->
+  <section class="screen" data-screen="2">
+    <div class="letter">
+      <p class="eyebrow">page one</p>
+      <h2 class="script">I'm sorry.</h2>
+      <p class="body-text" id="apologyText">
+        I know I hurt you, and that sits heavy on me. You didn't deserve that,
+        and I don't want to make excuses — I just want to be better, starting now.
+        You mean more to me than I've shown lately, and I want to change that.
+      </p>
+      <button class="btn btn-primary" data-next="3">Keep reading</button>
+    </div>
+  </section>
+
+  <!-- SCREEN 3 -->
+  <section class="screen" data-screen="3">
+    <div class="letter">
+      <p class="eyebrow">page two</p>
+      <h2 class="script">Here's what I promise</h2>
+      <ul class="promise-list">
+        <li>To listen more than I speak</li>
+        <li>To never let this happen again</li>
+        <li>To choose you, on purpose, every day</li>
+      </ul>
+      <button class="btn btn-primary" data-next="4">One more page</button>
+    </div>
+  </section>
+
+  <!-- SCREEN 4: the ask -->
+  <section class="screen" data-screen="4">
+    <div class="letter letter-ask">
+      <p class="eyebrow">the question</p>
+      <h2 class="script">Can you forgive me?</h2>
+      <p class="body-text">Take your time. I'll wait right here.</p>
+      <div class="choice-row" id="choiceRow">
+        <button class="btn btn-yes" id="yesBtn">Yes, I forgive you</button>
+        <button class="btn btn-no" id="noBtn">No</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCREEN 5: final -->
+  <section class="screen" data-screen="5">
+    <div class="letter letter-final">
+      <p class="eyebrow">last page</p>
+      <h2 class="script">Thank you.</h2>
+      <div class="photo-frame">
+        <!-- Put your photo at assets/photo.jpg -->
+        <img src="assets/photo.jpg" alt="Us" id="usPhoto">
+      </div>
+      <p class="body-text">
+        This is my favorite picture of us. Here's to writing many more pages together.
+      </p>
+      <p class="signoff script">— always yours</p>
+    </div>
+    <div class="hearts" id="heartsLayer"></div>
+  </section>
+
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>
