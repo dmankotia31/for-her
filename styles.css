@@ -173,6 +173,8 @@ html,body{
   background:var(--rose-deep);
   color:#fff8f5;
   box-shadow:0 10px 24px rgba(168,82,116,.4);
+  position:relative;
+  z-index:40;
 }
 .btn-yes:hover{ transform:translateY(-2px) scale(1.03); }
 
@@ -183,6 +185,7 @@ html,body{
   position:relative;
   left:0;
   top:0;
+  z-index:10;
 }
 
 /* Final screen */
@@ -231,4 +234,9 @@ html,body{
 @media (max-width:480px){
   .letter{ padding:36px 22px; }
   .choice-row{ flex-direction:column; gap:20px; }
+
+  .letter-final{ padding:28px 20px; }
+  .photo-frame{ max-width:220px; margin-bottom:16px; }
+  .letter-final .body-text{ margin-bottom:14px; font-size:15px; }
+  .signoff{ font-size:18px; margin-top:4px; }
 }

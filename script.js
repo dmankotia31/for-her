@@ -32,6 +32,7 @@ function unlockSong(){
 
 document.addEventListener('click', unlockSong, { once:true });
 document.addEventListener('touchstart', unlockSong, { once:true });
+document.addEventListener('pointerdown', unlockSong, { once:true });
 
 // ---------- The "No" button that can't be caught ----------
 const noBtn = document.getElementById('noBtn');
@@ -40,12 +41,7 @@ const choiceRow = document.getElementById('choiceRow');
 
 let dodging = false;
 let dodgeCount = 0;
-let catchThreshold = randomThreshold();
-
-function randomThreshold(){
-  // Sometimes catchable after 3 tries, sometimes 5 — picked fresh each round
-  return 3 + Math.floor(Math.random() * 3); // 3, 4, or 5
-}
+const catchThreshold = 10; // fixed — no longer random per your request
 
 function dodge(){
   if(dodgeCount >= catchThreshold) return; // it's had enough — let her catch it
@@ -53,14 +49,14 @@ function dodge(){
   dodging = true;
   dodgeCount++;
 
-  const margin = 20;
+  const margin = 24;
   const w = noBtn.offsetWidth || 100;
   const h = noBtn.offsetHeight || 44;
 
-  // Always clamp to the visible viewport, so it never ends up
-  // scrolled out of view or off the edge of the screen.
-  const vw = document.documentElement.clientWidth;
-  const vh = document.documentElement.clientHeight;
+  // Use the actual visible viewport (accounts for mobile browser toolbars
+  // showing/hiding) so the button never ends up parked behind them.
+  const vw = window.visualViewport ? window.visualViewport.width : document.documentElement.clientWidth;
+  const vh = window.visualViewport ? window.visualViewport.height : document.documentElement.clientHeight;
 
   const maxX = Math.max(margin, vw - w - margin);
   const maxY = Math.max(margin, vh - h - margin);
@@ -72,7 +68,7 @@ function dodge(){
   noBtn.style.left = x + 'px';
   noBtn.style.top = y + 'px';
   noBtn.style.transition = 'left .18s ease, top .18s ease';
-  noBtn.style.zIndex = 30;
+  noBtn.style.zIndex = 20; // stays below the Yes button (z-index 40), never blocks it
 }
 
 // Desktop: run away before the cursor even reaches it
@@ -101,13 +97,6 @@ noBtn.addEventListener('click', (e) => {
     launchHearts();
   }, 700);
 });
-
-// Occasionally nudge it even without interaction, so it feels alive
-setInterval(() => {
-  if(document.querySelector('.screen[data-screen="4"]').classList.contains('active') && dodging && dodgeCount < catchThreshold){
-    if(Math.random() < 0.3) dodge();
-  }
-}, 1600);
 
 // ---------- Yes ----------
 yesBtn.addEventListener('click', () => {
