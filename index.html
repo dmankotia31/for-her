@@ -15,12 +15,10 @@
   <div class="stars"></div>
 </div>
 
-<audio id="song" loop preload="auto">
+<audio id="song" loop preload="auto" autoplay muted playsinline>
   <!-- Put your song file at assets/song.mp3 -->
   <source src="assets/song.mp3" type="audio/mpeg">
 </audio>
-
-<button id="soundToggle" class="sound-toggle" aria-label="Toggle music">🔈</button>
 
 <main class="stage">
 
@@ -41,8 +39,8 @@
       <h2 class="script">I'm sorry.</h2>
       <p class="body-text" id="apologyText">
         I know I hurt you, and that sits heavy on me. You didn't deserve that,
-        and I don't want to make excuses — I just want to be better, starting now.
-        You mean more to me than I've shown lately, and I want to change that.
+        and I don't want to make excuses. You mean more to me than I've shown
+        lately, and I'll work on changing that.
       </p>
       <button class="btn btn-primary" data-next="3">Keep reading</button>
     </div>
@@ -54,9 +52,9 @@
       <p class="eyebrow">page two</p>
       <h2 class="script">Here's what I promise</h2>
       <ul class="promise-list">
-        <li>To listen more than I speak</li>
-        <li>To never let this happen again</li>
-        <li>To choose you, on purpose, every day</li>
+        <li>To communicate better instead of shutting down</li>
+        <li>To be more thoughtful about how my actions affect you</li>
+        <li>To show up for you the way you deserve</li>
       </ul>
       <button class="btn btn-primary" data-next="4">One more page</button>
     </div>
@@ -85,9 +83,10 @@
         <img src="assets/photo.jpg" alt="Us" id="usPhoto">
       </div>
       <p class="body-text">
-        This is my favorite picture of us. Here's to writing many more pages together.
+        Can't wait to hug you tightly like this again. There's so many more
+        hugs, kisses, and pictures still coming.
       </p>
-      <p class="signoff script">— always yours</p>
+      <p class="signoff script">— with all my heart, bub</p>
     </div>
     <div class="hearts" id="heartsLayer"></div>
   </section>

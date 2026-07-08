@@ -15,33 +15,23 @@ document.querySelectorAll('[data-next]').forEach(btn => {
 });
 
 // ---------- Music ----------
+// Browsers block audio-with-sound from starting on page load with no
+// interaction at all, so the song loads muted+autoplaying immediately,
+// then the very first tap/click anywhere on the page unmutes it and makes
+// sure it's playing — so it feels like it "just plays" without needing a
+// dedicated sound button.
 const song = document.getElementById('song');
-const soundToggle = document.getElementById('soundToggle');
-let audioUnlocked = false;
+song.volume = 0.55;
 
-function tryPlaySong(){
-  song.volume = 0.55;
-  song.play().then(() => {
-    audioUnlocked = true;
-    soundToggle.textContent = '🔊';
-  }).catch(() => {
-    // Autoplay blocked — user can tap the sound icon instead
-    soundToggle.textContent = '🔈';
+function unlockSong(){
+  song.muted = false;
+  song.play().catch(() => {
+    // If it still can't play, try again silently on the next interaction
   });
 }
 
-document.querySelectorAll('[data-start-audio]').forEach(btn => {
-  btn.addEventListener('click', tryPlaySong, { once:true });
-});
-
-soundToggle.addEventListener('click', () => {
-  if(song.paused){
-    tryPlaySong();
-  } else {
-    song.pause();
-    soundToggle.textContent = '🔈';
-  }
-});
+document.addEventListener('click', unlockSong, { once:true });
+document.addEventListener('touchstart', unlockSong, { once:true });
 
 // ---------- The "No" button that can't be caught ----------
 const noBtn = document.getElementById('noBtn');
@@ -49,18 +39,34 @@ const yesBtn = document.getElementById('yesBtn');
 const choiceRow = document.getElementById('choiceRow');
 
 let dodging = false;
+let dodgeCount = 0;
+let catchThreshold = randomThreshold();
+
+function randomThreshold(){
+  // Sometimes catchable after 3 tries, sometimes 5 — picked fresh each round
+  return 3 + Math.floor(Math.random() * 3); // 3, 4, or 5
+}
 
 function dodge(){
+  if(dodgeCount >= catchThreshold) return; // it's had enough — let her catch it
+
   dodging = true;
-  const margin = 24;
+  dodgeCount++;
+
+  const margin = 20;
   const w = noBtn.offsetWidth || 100;
   const h = noBtn.offsetHeight || 44;
 
-  const maxX = window.innerWidth - w - margin;
-  const maxY = window.innerHeight - h - margin;
+  // Always clamp to the visible viewport, so it never ends up
+  // scrolled out of view or off the edge of the screen.
+  const vw = document.documentElement.clientWidth;
+  const vh = document.documentElement.clientHeight;
 
-  const x = Math.max(margin, Math.random() * maxX);
-  const y = Math.max(margin, Math.random() * maxY);
+  const maxX = Math.max(margin, vw - w - margin);
+  const maxY = Math.max(margin, vh - h - margin);
+
+  const x = margin + Math.random() * (maxX - margin);
+  const y = margin + Math.random() * (maxY - margin);
 
   noBtn.style.position = 'fixed';
   noBtn.style.left = x + 'px';
@@ -73,21 +79,32 @@ function dodge(){
 noBtn.addEventListener('mouseenter', dodge);
 noBtn.addEventListener('mousemove', dodge);
 
-// Mobile: run away on the first touch attempt, so a tap never lands
+// Mobile: run away on touch, unless it's earned the right to be caught
 noBtn.addEventListener('touchstart', (e) => {
-  e.preventDefault();
-  dodge();
+  if(dodgeCount < catchThreshold){
+    e.preventDefault();
+    dodge();
+  }
 }, { passive:false });
 
-// Safety net: even if it's ever "clicked", it never proceeds — just dodges again
+// Once it's dodged enough times, a real click/tap lands — but it still
+// doesn't take "no" for an answer, it just gently teases and moves on.
 noBtn.addEventListener('click', (e) => {
-  e.preventDefault();
-  dodge();
+  if(dodgeCount < catchThreshold){
+    e.preventDefault();
+    dodge();
+    return;
+  }
+  noBtn.textContent = "nice try 🙂";
+  setTimeout(() => {
+    goToScreen(5);
+    launchHearts();
+  }, 700);
 });
 
 // Occasionally nudge it even without interaction, so it feels alive
 setInterval(() => {
-  if(document.querySelector('.screen[data-screen="4"]').classList.contains('active') && dodging){
+  if(document.querySelector('.screen[data-screen="4"]').classList.contains('active') && dodging && dodgeCount < catchThreshold){
     if(Math.random() < 0.3) dodge();
   }
 }, 1600);
