@@ -41,28 +41,39 @@ const choiceRow = document.getElementById('choiceRow');
 
 let dodging = false;
 let dodgeCount = 0;
-const catchThreshold = 10; // fixed — no longer random per your request
+const catchThreshold = 10;
+let origin = null; // captured on first dodge: {x, y} = button's starting center
+
+function captureOrigin(){
+  if(origin) return;
+  const rect = noBtn.getBoundingClientRect();
+  origin = {
+    x: rect.left + rect.width / 2,
+    y: rect.top + rect.height / 2
+  };
+}
 
 function dodge(){
   if(dodgeCount >= catchThreshold) return; // it's had enough — let her catch it
 
+  captureOrigin();
   dodging = true;
   dodgeCount++;
 
-  const margin = 24;
+  const margin = 16;
   const w = noBtn.offsetWidth || 100;
   const h = noBtn.offsetHeight || 44;
+  const roam = 130; // stays within ~130px of where it started — nearby, not across the screen
 
-  // Use the actual visible viewport (accounts for mobile browser toolbars
-  // showing/hiding) so the button never ends up parked behind them.
   const vw = window.visualViewport ? window.visualViewport.width : document.documentElement.clientWidth;
   const vh = window.visualViewport ? window.visualViewport.height : document.documentElement.clientHeight;
 
-  const maxX = Math.max(margin, vw - w - margin);
-  const maxY = Math.max(margin, vh - h - margin);
+  // Pick a spot near the origin, then clamp so it never runs off the edge of the screen
+  let x = origin.x - w / 2 + (Math.random() * roam * 2 - roam);
+  let y = origin.y - h / 2 + (Math.random() * roam * 2 - roam);
 
-  const x = margin + Math.random() * (maxX - margin);
-  const y = margin + Math.random() * (maxY - margin);
+  x = Math.min(Math.max(x, margin), vw - w - margin);
+  y = Math.min(Math.max(y, margin), vh - h - margin);
 
   noBtn.style.position = 'fixed';
   noBtn.style.left = x + 'px';
